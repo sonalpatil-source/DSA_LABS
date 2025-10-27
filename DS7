@@ -1,0 +1,66 @@
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key):
+        self.root = self._insert_rec(self.root, key)
+        print(f"Inserted {key}.")
+
+    def _insert_rec(self, root, key):
+        if root is None:
+            return Node(key)
+        if key < root.key:
+            root.left = self._insert_rec(root.left, key)
+        elif key > root.key:
+            root.right = self._insert_rec(root.right, key)
+        # If key == root.key, do nothing (no duplicates)
+        return root
+
+    def search(self, key):
+        found = self._search_rec(self.root, key)
+        if found:
+            print(f"Key {key} found.")
+        else:
+            print(f"Key {key} not found.")
+        return found
+
+    def _search_rec(self, root, key):
+        if root is None:
+            return False
+        if key == root.key:
+            return True
+        elif key < root.key:
+            return self._search_rec(root.left, key)
+        else:
+            return self._search_rec(root.right, key)
+
+    def delete(self, key):
+        self.root, deleted = self._delete_rec(self.root, key)
+        if deleted:
+            print(f"Deleted {key}.")
+        else:
+            print(f"Key {key} not found to delete.")
+
+    def _delete_rec(self, root, key):
+        if root is None:
+            return root, False
+
+        deleted = False
+        if key < root.key:
+            root.left, deleted = self._delete_rec(root.left, key)
+        elif key > root.key:
+            root.right, deleted = self._delete_rec(root.right, key)
+        else:
+            deleted = True
+            # Node with only one child or no child
+            if root.left is None:
+                return root.right, deleted
+            elif root.right is None:
+                return root.left, deleted
+            # Node with two children: Get inorder successor (smallest in the right subtree)
