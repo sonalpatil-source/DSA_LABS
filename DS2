@@ -1,0 +1,45 @@
+def linear_search(account_ids, target):
+    """
+    Performs a linear search to check if target exists in account_ids.
+    Returns True if found, False otherwise.
+    """
+    for account_id in account_ids:
+        if account_id == target:
+            return True
+    return False
+
+
+def binary_search(account_ids, target):
+    """
+    Performs binary search to find target in a sorted account_ids list.
+    Returns True if found, False otherwise.
+    """
+    left, right = 0, len(account_ids) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if account_ids[mid] == target:
+            return True
+        elif account_ids[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return False
+
+
+# Example usage:
+account_ids = [101, 203, 405, 509, 601, 702, 805]
+target_id = 509
+
+print("Linear Search:")
+if linear_search(account_ids, target_id):
+    print(f"Account ID {target_id} found.")
+else:
+    print(f"Account ID {target_id} not found.")
+
+print("\nBinary Search:")
+# Note: binary search requires sorted list
+sorted_account_ids = sorted(account_ids)
+if binary_search(sorted_account_ids, target_id):
+    print(f"Account ID {target_id} found.")
+else:
+    print(f"Account ID {target_id} not found.")
