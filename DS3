@@ -1,0 +1,46 @@
+class TextEditor:
+    def __init__(self):
+        self.undo_stack = []  # stack of past states for undo
+        self.redo_stack = []  # stack of undone states for redo
+        self.current_state = ""  # current document text
+
+    def make_change(self, new_text):
+        # When a change is made, push current state onto undo stack,
+        # clear redo stack because new changes invalidate the redo history
+        self.undo_stack.append(self.current_state)
+        self.current_state = new_text
+        self.redo_stack.clear()
+        print(f"Change made. Document state: '{self.current_state}'")
+
+    def undo(self):
+        if not self.undo_stack:
+            print("No actions to undo.")
+            return
+        
+        # Push current state to redo stack, pop last state from undo stack to current
+        self.redo_stack.append(self.current_state)
+        self.current_state = self.undo_stack.pop()
+        print(f"Undo performed. Document state: '{self.current_state}'")
+
+    def redo(self):
+        if not self.redo_stack:
+            print("No actions to redo.")
+            return
+        
+        # Push current state to undo stack, pop last state from redo stack to current
+        self.undo_stack.append(self.current_state)
+        self.current_state = self.redo_stack.pop()
+        print(f"Redo performed. Document state: '{self.current_state}'")
+
+    def display_state(self):
+        print(f"Current document state: '{self.current_state}'")
+
+# Example usage:
+editor = TextEditor()
+editor.make_change("Hello")
+editor.make_change("Hello, world!")
+editor.make_change("Hello, world!!!")
+editor.undo()
+editor.undo()
+editor.redo()
+editor.display_state()
