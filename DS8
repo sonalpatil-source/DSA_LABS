@@ -1,0 +1,79 @@
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+def is_operator(c):
+    return c in '+-*/'
+
+def construct_expression_tree(prefix):
+    # We'll use a stack and process prefix from right to left (reverse) 
+    # to build the tree iteratively (since prefix is easier to parse right to left this way)
+
+    stack = []
+    # Process prefix expression in reverse
+    for symbol in reversed(prefix):
+        if not is_operator(symbol):
+            # Operand: create node and push
+            stack.append(Node(symbol))
+        else:
+            # Operator: pop two nodes and make them children
+            left = stack.pop()
+            right = stack.pop()
+            node = Node(symbol)
+            node.left = left
+            node.right = right
+            stack.append(node)
+    # Root is the only element in stack now
+    return stack[-1] if stack else None
+
+def postorder_non_recursive(root):
+    if root is None:
+        return []
+
+    stack = []
+    result = []
+    current = root
+    last_visited = None
+
+    while stack or current:
+        if current:
+            stack.append(current)
+            current = current.left
+        else:
+            peek_node = stack[-1]
+            # If right child exists and traversing node from left child, move right
+            if peek_node.right and last_visited != peek_node.right:
+                current = peek_node.right
+            else:
+                result.append(peek_node.value)
+                last_visited = stack.pop()
+
+    return result
+
+def delete_tree(root):
+    # Postorder traversal deleting nodes explicitly
+    # In Python, just remove references for GC to free memory
+    def _delete(node):
+        if node:
+            _delete(node.left)
+            _delete(node.right)
+            # Remove references
+            node.left = None
+            node.right = None
+            # Print node deletion for demonstration
+            print(f"Deleting node with value '{node.value}'")
+
+    _delete(root)
+
+# Example usage:
+
+prefix_expr = "+--a*bc/def"
+print("Prefix Expression:", prefix_expr)
+
+root = construct_expression_tree(prefix_expr)
+print("Postorder traversal (non-recursive):", "".join(postorder_non_recursive(root)))
+
+print("Deleting tree:")
+delete_tree(root)
