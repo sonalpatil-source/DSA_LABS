@@ -1,0 +1,80 @@
+class HashTable:
+    def __init__(self, size=10):
+        self.size = size
+        # Initialize the table with empty lists for chaining
+        self.table = [[] for _ in range(size)]
+
+    def _hash(self, key):
+        """
+        Division method hash function:
+        key modulo size of the table
+        """
+        return key % self.size
+
+    def insert(self, key, value):
+        """
+        Insert key-value pair into the hash table.
+        If key already exists, update its value.
+        """
+        index = self._hash(key)
+        # Check if key already exists; if so, update
+        for i, (k, v) in enumerate(self.table[index]):
+            if k == key:
+                self.table[index][i] = (key, value)
+                print(f"Updated key {key} with new value {value} at index {index}.")
+                return
+        # Otherwise, insert new key-value pair
+        self.table[index].append((key, value))
+        print(f"Inserted key {key} with value {value} at index {index}.")
+
+    def search(self, key):
+        """
+        Search for the value associated with the key.
+        Return the value if found, else None.
+        """
+        index = self._hash(key)
+        for k, v in self.table[index]:
+            if k == key:
+                print(f"Found key {key} with value {v} at index {index}.")
+                return v
+        print(f"Key {key} not found.")
+        return None
+
+    def delete(self, key):
+        """
+        Delete the key-value pair from the hash table.
+        """
+        index = self._hash(key)
+        for i, (k, v) in enumerate(self.table[index]):
+            if k == key:
+                del self.table[index][i]
+                print(f"Deleted key {key} from index {index}.")
+                return True
+        print(f"Key {key} not found to delete.")
+        return False
+
+    def display(self):
+        """Display the contents of the hash table."""
+        print("Hash Table contents:")
+        for i, chain in enumerate(self.table):
+            print(f"Index {i}: {chain}")
+
+# Example usage
+ht = HashTable()
+
+ht.insert(10, "Apple")
+ht.insert(20, "Banana")
+ht.insert(30, "Cherry")
+ht.insert(40, "Date")
+ht.insert(25, "Elderberry")  # Collision with 20 and 30 since 25 % 10 = 5 (no collision here)
+ht.insert(15, "Fig")          # Collision with 25, 15 % 10 = 5
+
+ht.display()
+
+ht.search(20)
+ht.search(99)  # Not present
+
+ht.delete(30)
+ht.delete(99)  # Not present
+
+ht.display()
