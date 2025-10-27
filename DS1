@@ -1,0 +1,78 @@
+from collections import Counter
+from statistics import mode, StatisticsError
+
+class Library:
+    def __init__(self):
+        # Dictionary format: {member_id: {book_title: borrow_count, ...}, ...}
+        self.records = {}
+
+    def add_member_record(self, member_id, borrow_data):
+        """
+        borrow_data: dict of {book_title: borrow_count}
+        """
+        self.records[member_id] = borrow_data
+
+    def average_books_borrowed(self):
+        total_borrowed = 0
+        total_members = len(self.records)
+        if total_members == 0:
+            return 0
+        for borrow_data in self.records.values():
+            total_borrowed += sum(borrow_data.values())
+        return total_borrowed / total_members
+
+    def book_borrow_stats(self):
+        """
+        Returns the book with highest and lowest borrowings overall.
+        """
+        book_totals = Counter()
+        for borrow_data in self.records.values():
+            for book, count in borrow_data.items():
+                book_totals[book] += count
+        
+        if not book_totals:
+            return None, None
+        
+        max_book = max(book_totals, key=book_totals.get)
+        min_book = min(book_totals, key=book_totals.get)
+        return max_book, min_book
+
+    def count_members_with_zero_borrow(self):
+        count = 0
+        for borrow_data in self.records.values():
+            if sum(borrow_data.values()) == 0:
+                count += 1
+        return count
+
+    def most_frequent_borrowed_book(self):
+        """
+        Returns the mode of book borrow counts (most frequently borrowed book).
+        If multiple books tie, return one of them.
+        """
+        book_totals = Counter()
+        for borrow_data in self.records.values():
+            for book, count in borrow_data.items():
+                book_totals[book] += count
+        
+        if not book_totals:
+            return None
+        
+        # mode of book borrow counts means the book with the highest total borrow count
+        max_count = max(book_totals.values())
+        # There might be multiple books with same max count, so we return all or one
+        most_frequent_books = [book for book, count in book_totals.items() if count == max_count]
+        return most_frequent_books[0]  # returning one of the most frequent books
+
+# Example usage
+library = Library()
+library.add_member_record("M1", {"Book A": 3, "Book B": 2})
+library.add_member_record("M2", {"Book A": 1, "Book C": 5})
+library.add_member_record("M3", {"Book D": 0})  # no books borrowed effectively
+library.add_member_record("M4", {})  # no books borrowed
+
+print("Average books borrowed:", library.average_books_borrowed())
+max_book, min_book = library.book_borrow_stats()
+print("Book with highest borrowings:", max_book)
+print("Book with lowest borrowings:", min_book)
+print("Members with zero borrowings:", library.count_members_with_zero_borrow())
+print("Most frequently borrowed book:", library.most_frequent_borrowed_book())
